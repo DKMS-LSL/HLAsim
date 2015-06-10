@@ -4,7 +4,7 @@ Version: 0.0.2
 Authors@R: person("Gerhard", "Schöfl", role = c("aut", "cre"),
                   email = "Schoefl@dkms-lab.de")
 Description: Simulate allelic dropouts in HLA data.
-Depends: R (>= 3.1.2)
+Depends: R (>= 3.2.0)
 License: MIT + file LICENSE
 Suggests:
     orcl,
@@ -24,7 +24,6 @@ Imports:
     lubridate,
     memoise,
     purrr,
-    RCurl,
     Rcpp,
     R6,
     stringi
