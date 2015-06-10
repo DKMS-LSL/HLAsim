@@ -1,0 +1,31 @@
+Package: HLAsim
+Title: Simulate allelic dropouts in HLA data
+Version: 0.0.2
+Authors@R: person("Gerhard", "Schöfl", role = c("aut", "cre"),
+                  email = "Schoefl@dkms-lab.de")
+Description: Simulate allelic dropouts in HLA data.
+Depends: R (>= 3.1.2)
+License: MIT + file LICENSE
+Suggests:
+    orcl,
+    HLAdata
+LazyData: true
+Type: Package
+Maintainer: Gerhard Schöfl <Schoefl@dkms-lab.de>
+Encoding: UTF-8
+SystemRequirements: C++11
+Imports:
+    assertthat,
+    curl,
+    data.table,
+    dplyr,
+    foreach,
+    iterators,
+    lubridate,
+    memoise,
+    purrr,
+    RCurl,
+    Rcpp,
+    R6,
+    stringi
+LinkingTo: Rcpp
