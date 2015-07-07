@@ -63,6 +63,10 @@ make_genotype_sampler <- function(x, eag) {
   ## a function that maps alleles to eag_nums
   remap   <- make_remapper(lookup)
 
+ # xtbl[genotype == "04:02:01G/04:HJMR"]
+ # allele2string(list(map(remap(string2allele("04:02:01G/04:HJMR")[[1]]))))
+ # dt_remap["04:02:01G/04:HJMR"]
+
   ## check the genotypes in x for mappability
   unique_genotypes <- xtbl[, unique(genotype)]
   message("Ensuring mappability of ", length(unique_genotypes),
@@ -96,6 +100,8 @@ make_genotype_sampler <- function(x, eag) {
   ## Calculate genotype frequencies based on
   ## the remapped genotypes
   tbl2 <- xtbl[dt_remap]
+  #tbl2[genotype == "04:02:01G/04:HJMR"]
+
   tbl2 <- tbl2[, genotype := NULL]
   setnames(tbl2, "genotype2", "genotype")
   tbl2 <- tbl2[, `:=`(

@@ -167,9 +167,7 @@ print.HLA <- function(x, ...) {
   rs <- rs[!is.na(allele1) & !is.na(allele2)]
   ## Determine genotype taking care to sort Allele1 and Allele2 alphabetically
   ## before joining them together.
-  rs[, genotype := ifelse(allele1 < allele2,
-                          paste0(allele1, '/', allele2),
-                          paste0(allele2, '/', allele1))]
+  rs[, genotype := hla_allele_to_genotype(allele1, allele2)]
   ## Deterimine zygosity
   rs[, zygosity := ifelse(allele1 == allele2, 'homozygous', 'heterozygous')]
   data.table::setkeyv(rs, 'lims_donor_id') # sorting by key

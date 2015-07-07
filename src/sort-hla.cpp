@@ -3,7 +3,17 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <boost/iterator/zip_iterator.hpp>
+#include <boost/range.hpp>
 using namespace Rcpp;
+
+template <typename... T>
+auto zip(const T&... containers) -> boost::iterator_range<boost::zip_iterator<decltype(boost::make_tuple(std::begin(containers)...))>>
+{
+  auto zip_begin = boost::make_zip_iterator(boost::make_tuple(std::begin(containers)...));
+  auto zip_end = boost::make_zip_iterator(boost::make_tuple(std::end(containers)...));
+  return boost::make_iterator_range(zip_begin, zip_end);
+}
 
 std::vector<std::string> string_split(const std::string& str, const std::string& sep = ":") {
   std::vector<std::string> tokens;
@@ -68,6 +78,21 @@ bool compare_hla_alleles(const std::string& a1, const std::string& a2) {
 std::vector<std::string> hla_sort(std::vector<std::string> alleles) {
   std::sort(alleles.begin(), alleles.end(), compare_hla_alleles);
   return alleles;
+}
+
+// [[Rcpp::export]]
+std::vector<std::string> hla_allele_to_genotype(std::vector<std::string> a1, std::vector<std::string> a2) {
+  std::vector<std::string> genotype;
+  for (auto x : zip(a1, a2)) {
+    std::string a, b;
+    boost::tie(a, b) = x;
+    if (compare_hla_alleles(a, b)) {
+      genotype.push_back( a + '/' + b );
+    } else {
+      genotype.push_back( b + '/' + a );
+    }
+  }
+  return genotype;
 }
 
 // [[Rcpp::export]]

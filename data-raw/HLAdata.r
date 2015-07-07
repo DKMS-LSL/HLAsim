@@ -4,9 +4,9 @@ library(lubridate)
 # Genotyping data ---------------------------------------------------------
 
 ## Genotyping results for DRB1, DQB1, and DPB1 between 01/01/2014 and 23/03/2015
-DRB1 <- HLA("DRB1", "01/01/2014", "23/03/2015")
-DQB1 <- HLA("DQB1", "01/01/2014", "23/03/2015")
-DPB1 <- HLA("DPB1", "01/01/2014", "23/03/2015")
+DRB1 <- HLAsim::HLA("DRB1", "01/01/2014", "23/03/2015")
+DQB1 <- HLAsim::HLA("DQB1", "01/01/2014", "23/03/2015")
+DPB1 <- HLAsim::HLA("DPB1", "01/01/2014", "23/03/2015")
 
 ## remove low-resolution four-digit codes and unknown alleles
 drb1 <- HLAsim:::clean_hla_data(DRB1)

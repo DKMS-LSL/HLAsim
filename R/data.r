@@ -46,9 +46,9 @@
 #'
 #' @format
 #' \itemize{
-#'   \item \code{drb1}: A <\code{\link{HLA}}> instance with 926,228 rows.
-#'   \item \code{dqb1}: A <\code{\link{HLA}}> instance with 922,495 rows.
-#'   \item \code{dpb1}: A <\code{\link{HLA}}> instance with 900,913 rows.
+#'   \item \code{drb1}: A <\code{\link{HLA}}> instance with 926,227 rows.
+#'   \item \code{dqb1}: A <\code{\link{HLA}}> instance with 922,494 rows.
+#'   \item \code{dpb1}: A <\code{\link{HLA}}> instance with 900,910 rows.
 #' }
 #'
 #' @name geno_data

@@ -1,6 +1,6 @@
 Package: HLAsim
 Title: Simulate allelic dropouts in HLA data
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: person("Gerhard", "Schöfl", role = c("aut", "cre"),
                   email = "Schoefl@dkms-lab.de")
 Description: Simulate allelic dropouts in HLA data.

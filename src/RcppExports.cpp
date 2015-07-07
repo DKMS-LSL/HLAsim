@@ -16,6 +16,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// hla_allele_to_genotype
+std::vector<std::string> hla_allele_to_genotype(std::vector<std::string> a1, std::vector<std::string> a2);
+RcppExport SEXP HLAsim_hla_allele_to_genotype(SEXP a1SEXP, SEXP a2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type a1(a1SEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type a2(a2SEXP);
+    __result = Rcpp::wrap(hla_allele_to_genotype(a1, a2));
+    return __result;
+END_RCPP
+}
 // field1
 std::vector<std::string> field1(std::vector<std::string> a);
 RcppExport SEXP HLAsim_field1(SEXP aSEXP) {
