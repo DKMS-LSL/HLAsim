@@ -1,0 +1,173 @@
+---
+title: "Allelic dropout simulations"
+author: "Gerhard Schöfl"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, collapse = TRUE, comment = "#>")
+library(HLAsim)
+library(dplyr)
+library(ggplot2)
+```
+
+The following code partially reproduces _Figure 2_ in the manuscript.
+
+## Load data
+
+Genotyping results for the class II HLA genes, DRB1, DQB1, and DPB1, processed between 01/01/2014 and 23/03/2015 at DKMS Life Science Lab.
+```{r load1}
+data(list = c("drb1", "dqb1", "dpb1"), package = "HLAsim")
+drb1
+```
+
+EAG (Exon Allele Group) codes for IMGT/HLA release 3.17.0. EAG codes group HLA alleles that are identical over specific exons.  
+```{r load2}
+data(list = c("drb1_eag1412", "dqb1_eag1412", "dpb1_eag1412"), package = "HLAsim")
+drb1_eag1412
+```
+
+## Generate genotype samplers
+
+First we create functions that allow generating random genotype samples based on observed genotype frequencies. 
+
+Genotypes have been assigned based on different IMGT/HLA releases over time. Typically this may affect the use of ambiguity codes (NMDP codes and G-groups) as new reference sequences get added to the database. Therefore, a set of exonic sequences is only guarantied to map to set of allele codes for a given IMGT/HLA release. `make_genotype_sampler` therefore normalises all allele codes with respect to a single IMGT/HLA release.
+
+We create such samplers for each gene and country of origin of samples, respectively.
+
+```{r make_samplers, cache=TRUE, cache.lazy=FALSE, cache.comments=FALSE}
+sample_drb_de <- make_genotype_sampler(drb1[provenance == "DE"], drb1_eag1412)
+sample_drb_pl <- make_genotype_sampler(drb1[provenance == "PL"], drb1_eag1412)
+sample_drb_uk <- make_genotype_sampler(drb1[provenance == "UK"], drb1_eag1412)
+
+sample_dqb_de <- make_genotype_sampler(dqb1[provenance == "DE"], dqb1_eag1412)
+sample_dqb_pl <- make_genotype_sampler(dqb1[provenance == "PL"], dqb1_eag1412)
+sample_dqb_uk <- make_genotype_sampler(dqb1[provenance == "UK"], dqb1_eag1412)
+
+sample_dpb_de <- make_genotype_sampler(dpb1[provenance == "DE"], dpb1_eag1412)
+sample_dpb_pl <- make_genotype_sampler(dpb1[provenance == "PL"], dpb1_eag1412)
+sample_dpb_uk <- make_genotype_sampler(dpb1[provenance == "UK"], dpb1_eag1412)
+```
+
+A sampler is a function that takes a table of DNA concentrations, `conc`, a sample size, `n`, and an intervall to bin DNA concentrations, `bin_size` as arguments. It will generate `n` random genotyps based on observed genotype frequencies and randomly associate these geneotypes with DNA concentrations.
+
+```{r show_sampler}
+sample_drb_de
+```
+
+## Load DNA-concentration/error-rate data
+
+Load DNA concentration measurements for approx. 24,000 random samples from Germany, Poland, and the UK, respectively.
+```{r load3}
+data("concentration", package = "HLAsim")
+concentration
+```
+
+Load an empirical cumulative distribution function describing DNA-concentration-dependent error rates based on data for HLA-A extracted for the time period between 01/09/2014 and 23/05/2015.
+```{r load4, fig.width=6, fig.height=4, fig.align='center'}
+data("cdfA", package = "HLAsim")
+plot(cdfA)
+```
+
+## Resample genotypes
+
+```{r settings}
+# Total number of random samples
+n <- 1e6
+# Binwidth for DNA concentrations
+bin_width <- 2.5
+```
+
+```{r sample, cache=TRUE}
+## DRB1
+gtbl_drb1_de <- sample_drb_de(concentration[provenance == "DE"], n, bin_width)
+gtbl_drb1_pl <- sample_drb_pl(concentration[provenance == "PL"], n, bin_width)
+gtbl_drb1_uk <- sample_drb_uk(concentration[provenance == "UK"], n, bin_width)
+
+## DQB1
+gtbl_dqb1_de <- sample_dqb_de(concentration[provenance == "DE"], n, bin_width)
+gtbl_dqb1_pl <- sample_dqb_pl(concentration[provenance == "PL"], n, bin_width)
+gtbl_dqb1_uk <- sample_dqb_uk(concentration[provenance == "UK"], n, bin_width)
+
+## DPB1
+gtbl_dpb1_de <- sample_dpb_de(concentration[provenance == "DE"], n, bin_width)
+gtbl_dpb1_pl <- sample_dpb_pl(concentration[provenance == "PL"], n, bin_width)
+gtbl_dpb1_uk <- sample_dpb_uk(concentration[provenance == "UK"], n, bin_width)
+
+gtbl_drb1_de
+```
+
+## Inject errors
+
+We inject errors by randomly chosing either exon 2, exon 3, or both for allelic dropout. The _odds_ of a sequence being dropped depend on the experimental setup: At DKMS LSL exons 2 of DRB1 and DPB1 are amplified in two PCR reactions each, whereas exon 3 in amplified in a single PCR reaction. In this case, the odds in favour of dropping a sequence from exon 2 rather than exon 3 are 1:4. The overall proportion of errors (_perr_) is chosen at random.
+
+```{r inject_error, cache=TRUE}
+## DRB1
+err_tbl_drb1_de <- inject_errors(gtbl_drb1_de, cdfA, perr = 0.01, odds = 0.25)
+err_tbl_drb1_pl <- inject_errors(gtbl_drb1_pl, cdfA, perr = 0.01, odds = 0.25)
+err_tbl_drb1_uk <- inject_errors(gtbl_drb1_uk, cdfA, perr = 0.01, odds = 0.25)
+
+## DQB1
+err_tbl_dqb1_de <- inject_errors(gtbl_dqb1_de, cdfA, perr = 0.01, odds = 1)
+err_tbl_dqb1_pl <- inject_errors(gtbl_dqb1_pl, cdfA, perr = 0.01, odds = 1)
+err_tbl_dqb1_uk <- inject_errors(gtbl_dqb1_uk, cdfA, perr = 0.01, odds = 1)
+
+## DPB1
+err_tbl_dpb1_de <- inject_errors(gtbl_dpb1_de, cdfA, perr = 0.01, odds = 0.25)
+err_tbl_dpb1_pl <- inject_errors(gtbl_dpb1_pl, cdfA, perr = 0.01, odds = 0.25)
+err_tbl_dpb1_uk <- inject_errors(gtbl_dpb1_uk, cdfA, perr = 0.01, odds = 0.25)
+
+err_tbl_drb1_de
+```
+
+## Effects of gene and sample provenance
+
+Finally we can summarise the effects of gene and sample provenance on error categories
+
+```{r analysis, fig.width=7.5, fig.height=4}
+library(foreach)
+library(iterators)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(ggthemes)
+
+summarise_gtbl <- function(x) {
+  tbl <- summary(x) %>%
+    dplyr::select(-pHet, -nerr) %>%
+    tidyr::gather(type, proportion, pHom:pNA) %>%
+    dplyr::tbl_df()
+  levels(tbl$type) <- c("erroneous HM", "unchanged HT", "erroneous HT", "incomp. exons")
+  tbl
+}
+
+tbls <- iter(ls(pattern = "^err_tbl_.+_.+"))
+tbls.summary <- tbl_dt(foreach(tbl = tbls, .combine = "rbind") %do% {
+  gene <- toupper(strsplit(tbl, "_")[[1]][3])
+  provenance <- toupper(strsplit(tbl, "_")[[1]][4])
+  summarise_gtbl(get(tbl)) %>%
+    mutate(provenance = provenance, gene = gene)
+})
+
+ggplot(tbls.summary, aes(x = type, y = proportion, fill = provenance)) +
+  geom_bar(position = "dodge", stat = "identity", colour = "white") +
+  facet_grid(. ~ gene) +
+  geom_text(aes(label = ifelse(proportion > 0.01, round(proportion, 2), ""),
+                hjust = ifelse(proportion > 0.2, 1.2, -0.2)),
+            angle = 90, colour = "black", position = position_dodge(0.9), size = 2.5) +
+  scale_fill_brewer(palette = "Pastel1") +
+  labs(x = "Genotyping error category", y = "Proportion", fill = "Provenance") +
+  theme(axis.title.x = element_text(vjust = -0.5),
+        axis.title.y = element_text(vjust = 1),
+        axis.text.x = element_text(size = 8, angle = 30, vjust = 1, hjust = 1)) +
+  theme_hc() + 
+  theme(legend.position = "top")
+```
+
+
+

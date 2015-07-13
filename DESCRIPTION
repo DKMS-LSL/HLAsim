@@ -6,15 +6,16 @@ Authors@R: person("Gerhard", "Schöfl", role = c("aut", "cre"),
 Description: Simulate allelic dropouts in HLA data.
 Depends: R (>= 3.2.0)
 License: MIT + file LICENSE
-Suggests:
+Suggests: 
     orcl,
-    HLAdata
+    HLAdata,
+    knitr
 LazyData: true
 Type: Package
 Maintainer: Gerhard Schöfl <Schoefl@dkms-lab.de>
 Encoding: UTF-8
 SystemRequirements: C++11
-Imports:
+Imports: 
     assertthat,
     curl,
     data.table,
@@ -28,3 +29,4 @@ Imports:
     R6,
     stringi
 LinkingTo: Rcpp
+VignetteBuilder: knitr
