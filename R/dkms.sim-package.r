@@ -2,7 +2,7 @@
 #'
 #' Simulate allelic dropout errors in HLA data.
 #'
-#' @import dplyr
+#' @importFrom dplyr %>% tbl_dt select rename
 #' @import data.table
 #' @import Rcpp
 #'

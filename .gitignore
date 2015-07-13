@@ -4,3 +4,4 @@
 scratch.[rR]
 testing*.[rR]
 EAG*
+vignettes/*_cache

@@ -2,6 +2,14 @@ is.empty <- function(x) {
   is.null(x) || length(x) == 0L || (length(x) == 1L && !nzchar(x))
 }
 
+nunique <- function(x, ...) {
+  if (is.factor(x)) {
+    length(levels(x))
+  } else {
+    length(unique(x, ...))
+  }
+}
+
 chin <- data.table::`%chin%`
 
 `%ni%` <- Negate(`%in%`)

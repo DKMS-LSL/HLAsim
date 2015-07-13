@@ -37,10 +37,10 @@ make_genotype_sampler <- function(x, eag) {
     is(eag, "eag_tbl")
   )
 
+  foreach  <- foreach::foreach
   `%do%`   <- foreach::`%do%`
   icount   <- iterators::icount
   iter     <- iterators::iter
-  foreach  <- foreach::foreach
 
   ## check if we run in knitr
   in_knitr <- isTRUE(getOption('knitr.in.progress'))
@@ -51,7 +51,9 @@ make_genotype_sampler <- function(x, eag) {
 
   ## create lookup tables mapping rep_alleles (before assignment of ambigutiy
   ## codes), eag alleles (after assignment of ambiguity codes), eag_num, and allele_num
-  message("Creating lookup table and mappers ...\n", sep = "")
+  if (!in_knitr) {
+    message("Creating lookup table and mappers ...\n", sep = "")
+  }
   alleles <- xtbl[, .(allele1, allele2)]
   alleles <- hla_sort(unique(c(alleles$allele1, alleles$allele2)))
 
@@ -69,8 +71,10 @@ make_genotype_sampler <- function(x, eag) {
 
   ## check the genotypes in x for mappability
   unique_genotypes <- xtbl[, unique(genotype)]
-  message("Ensuring mappability of ", length(unique_genotypes),
-          " genotypes. This step will take a while ...\n", sep = "")
+  if (!in_knitr) {
+    message("Ensuring mappability of ", length(unique_genotypes),
+            " genotypes. This step will take a while ...\n", sep = "")
+  }
   pbar <- utils::txtProgressBar(min = 0, max = length(unique_genotypes), style = 3)
   on.exit(close(pbar))
   iREP <- iter(string2allele(unique_genotypes))
@@ -261,7 +265,7 @@ summary.geno_table <- function(object, ...) {
 merge.geno_table <- function(x, y = NULL) {
   samples(x)[errors(x)] %>%
     dplyr::select(genotype, i.genotype, zygosity, i.zygosity, eag_status, i.eag_status, conc, bins) %>%
-    rename(genotype2 = i.genotype, zygosity2 = i.zygosity, eag_status2 = i.eag_status)
+    dplyr::rename(genotype2 = i.genotype, zygosity2 = i.zygosity, eag_status2 = i.eag_status)
 }
 
 #' @export
