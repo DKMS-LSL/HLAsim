@@ -61,8 +61,17 @@ print.nmdp_tbl <- function(x, ..., n = 5) {
 #' g_codes <- g_table()
 #' }
 g_table <- function() {
-  u <- "http://hla.alleles.org/wmda/hla_nom_g.txt"
-  rs <- read.csv(u, header = FALSE, sep = ";", comment.char = "#")
+  con <- curl::curl("http://hla.alleles.org/wmda/hla_nom_g.txt")
+  on.exit(close(con))
+  tryCatch(open(con), error = function(e) {
+    stop("Trying to access http://hla.alleles.org: ", e$message, call. = FALSE)
+  })
+
+  if (readLines(con, n = 1) != "# file: hla_nom_g.txt") {
+    warning("Possibly malformed file \"hla_nom_g.txt\" ",
+            "downloaded from http://hla.alleles.org.", immediate. = TRUE)
+  }
+  rs <- read.csv(con, header = FALSE, sep = ";", comment.char = "#")
   rs <- dplyr::tbl_dt(data.table::setDT(rs))
   data.table::setnames(rs, names(rs), c("gene", "subtype", "code"))
   rs <- rs[, gene := paste0("HLA-", sub("*", "", gene, fixed = TRUE))]
