@@ -259,11 +259,11 @@ joker_table <- function(eag) {
   exon           <- 3
   if (gene %in% c("HLA-DQB1", "HLA-DRB1", "HLA-DPB1") &&
       dna_version_id == "52" &&
-      !requireNamespace("orcl", quietly = FALSE)) {
+      !requireNamespace("orcl", quietly = TRUE)) {
     switch(gene,
-           `HLA-DQB1` = DQB1_1412_jokers,
-           `HLA-DRB1` = DRB1_1412_jokers,
-           `HLA-DPB1` = DPB1_1412_jokers)
+           `HLA-DQB1` = dqb1_jokers1412,
+           `HLA-DRB1` = drb1_jokers1412,
+           `HLA-DPB1` = dpb1_jokers1412)
   } else {
     fmt <- "
     SELECT joker_num, allele_num, nmdp_new AS eag_allele
@@ -283,11 +283,11 @@ partials_table <- function(eag) {
   exon             <- 3
   if (gene %in% c("HLA-DQB1", "HLA-DRB1", "HLA-DPB1") &&
       dna_version_id == "52" &&
-      !requireNamespace("orcl", quietly = FALSE)) {
+      !requireNamespace("orcl", quietly = TRUE)) {
     switch(gene,
-           `HLA-DQB1` = DQB1_1412_partials,
-           `HLA-DRB1` = DRB1_1412_partials,
-           `HLA-DPB1` = DPB1_1412_partials)
+           `HLA-DQB1` = dqb1_partials1412,
+           `HLA-DRB1` = drb1_partials1412,
+           `HLA-DPB1` = dpb1_partials1412)
   } else {
     fmt <- "
     SELECT a.allele_num,
@@ -297,7 +297,7 @@ partials_table <- function(eag) {
     ON a.ALLELE_NUM_PARTIAL = b.ALLELE_NUM
     AND a.DNA_VERSION_ID    = b.DNA_VERSION_ID
     AND a.GENE              = b.GENE
-    WHERE a.GENE              = '%s'
+    WHERE a.GENE            = '%s'
     AND b.DNA_VERSION_ID    = '%s'
     AND a.EXON              = %s
     AND b.NEXTYPE_BASIS_ID  = %s"

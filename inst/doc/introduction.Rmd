@@ -26,7 +26,7 @@ data(list = c("drb1", "dqb1", "dpb1"), package = "HLAsim")
 drb1
 ```
 
-EAG (Exon Allele Group) codes for IMGT/HLA release 3.17.0. EAG codes group HLA alleles that are identical over specific exons.  
+EAG (Exon Allele Group) codes for IMGT/HLA release 3.17.0. EAG codes group HLA alleles that are identical over specific exons. They are used by the allele matching algorithm implemented in [neXtype](http://www.biomedcentral.com/1471-2164/15/63), the HLA typing software used at DKMS Life Science Lab.
 ```{r load2}
 data(list = c("drb1_eag1412", "dqb1_eag1412", "dpb1_eag1412"), package = "HLAsim")
 drb1_eag1412
@@ -36,9 +36,9 @@ drb1_eag1412
 
 First we create functions that allow generating random genotype samples based on observed genotype frequencies. 
 
-Genotypes have been assigned based on different IMGT/HLA releases over time. Typically this may affect the use of ambiguity codes (NMDP codes and G-groups) as new reference sequences get added to the database. Therefore, a set of exonic sequences is only guarantied to map to set of allele codes for a given IMGT/HLA release. `make_genotype_sampler` therefore normalises all allele codes with respect to a single IMGT/HLA release.
+Genotypes have been assigned based on different IMGT/HLA releases over time. Typically this may affect the use of ambiguity codes (NMDP codes and G-groups) as new reference sequences get added to the database. Therefore, a set of exonic sequences is only guarantied to map to set of allele codes for a given IMGT/HLA release. `make_genotype_sampler` normalises all allele codes with respect to a single IMGT/HLA release by remapping genotypes based on a given set of EAG codes.
 
-We create such samplers for each gene and country of origin of samples, respectively.
+We create such sampler functions for each gene and country of origin of samples, respectively.
 
 ```{r make_samplers, cache=TRUE, cache.lazy=FALSE, cache.comments=FALSE}
 sample_drb_de <- make_genotype_sampler(drb1[provenance == "DE"], drb1_eag1412)
@@ -54,7 +54,7 @@ sample_dpb_pl <- make_genotype_sampler(dpb1[provenance == "PL"], dpb1_eag1412)
 sample_dpb_uk <- make_genotype_sampler(dpb1[provenance == "UK"], dpb1_eag1412)
 ```
 
-A sampler is a function that takes a table of DNA concentrations, `conc`, a sample size, `n`, and an intervall to bin DNA concentrations, `bin_size` as arguments. It will generate `n` random genotyps based on observed genotype frequencies and randomly associate these geneotypes with DNA concentrations.
+A sampler is a function that takes a table of DNA concentrations, `conc`, a sample size, `n`, and an interval to bin DNA concentrations, `bin_size` as arguments. It will generate `n` random genotyps based on observed genotype frequencies and randomly associate these geneotypes with DNA concentrations.
 
 ```{r show_sampler}
 sample_drb_de
@@ -62,13 +62,13 @@ sample_drb_de
 
 ## Load DNA-concentration/error-rate data
 
-Load DNA concentration measurements for approx. 24,000 random samples from Germany, Poland, and the UK, respectively.
+DNA concentration measurements for approx. 24,000 random samples from Germany, Poland, and the UK, respectively.
 ```{r load3}
 data("concentration", package = "HLAsim")
 concentration
 ```
 
-Load an empirical cumulative distribution function describing DNA-concentration-dependent error rates based on data for HLA-A extracted for the time period between 01/09/2014 and 23/05/2015.
+An empirical cumulative distribution function describing DNA-concentration-dependent error rates based on data for HLA-A extracted for the time period between 01/09/2014 and 23/05/2015.
 ```{r load4, fig.width=6, fig.height=4, fig.align='center'}
 data("cdfA", package = "HLAsim")
 plot(cdfA)
@@ -104,7 +104,9 @@ gtbl_drb1_de
 
 ## Inject errors
 
-We inject errors by randomly chosing either exon 2, exon 3, or both for allelic dropout. The _odds_ of a sequence being dropped depend on the experimental setup: At DKMS LSL exons 2 of DRB1 and DPB1 are amplified in two PCR reactions each, whereas exon 3 in amplified in a single PCR reaction. In this case, the odds in favour of dropping a sequence from exon 2 rather than exon 3 are 1:4. The overall proportion of errors (_perr_) is chosen at random.
+We inject errors by randomly chosing either exon 2, exon 3, or both for allelic dropout. The `odds` of a sequence being dropped depend on the experimental setup: At DKMS LSL exons 2 of DRB1 and DPB1 are amplified in two PCR reactions each, whereas exon 3 in amplified in a single PCR reaction. In this case, the odds in favour of dropping a sequence from exon 2 rather than exon 3 are 1:4. The overall proportion of errors (`perr`) is chosen at random.
+
+Note, that tu fully reproduce Figure 2 one would need to simulated data over a range of error rates and odds.
 
 ```{r inject_error, cache=TRUE}
 ## DRB1
@@ -168,6 +170,27 @@ ggplot(tbls.summary, aes(x = type, y = proportion, fill = provenance)) +
   theme_hc() + 
   theme(legend.position = "top")
 ```
+
+## Generating training data for prediction of spurious typings 
+
+Genotype frequency tables have been generated when we set up the sampler functions
+
+```{r}
+gtf_table(sample_drb_de)
+```
+
+To generate training data for probabilistic learning of genotyping errors based on DNA concentration and allele frequencies we procede by mapping the observed and expected genotype frequencies to the simulated error tables using `map_genotype_frequencies`.
+
+```{r}
+drb1.01.de <- map_genotype_frequencies(err_tbl_drb1_de) %>%
+  dplyr::mutate(provenance = "DE")
+drb1.01.de %>% 
+  group_by(Class) %>% 
+  sample_n(5)
+```
+
+
+
 
 
 

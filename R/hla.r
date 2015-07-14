@@ -68,11 +68,15 @@ print.HLA <- function(x, ...) {
     time_from = NULL,
     time_to   = NULL,
     initialize = function(gene = NULL, from = NULL, to = NULL) {
-      self$gene <- if (!is.null(gene)) match_hla_gene(gene)
-      self$time_from <- if (!is.null(from) && valid_date(from)) from
-      self$time_to <- if (!is.null(to) && valid_date(to)) to
-      private$db <- orcl::Ngsread()
-      private$fetch()
+      if ( !is.null(gene) &&
+          (!is.null(from) && valid_date(from)) &&
+          (!is.null(to)   && valid_date(to))) {
+        self$gene <- match_hla_gene(gene)
+        self$time_from <- from
+        self$time_to <- to
+        private$db <- orcl::Ngsread()
+        private$fetch()
+      }
     },
     get_table = function() {
       private$allele_table

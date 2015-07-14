@@ -117,3 +117,13 @@ ggplot(tbls.summary, aes(x = type, y = proportion, fill = provenance)) +
   theme_hc() + 
   theme(legend.position = "top")
 
+## ------------------------------------------------------------------------
+gtf_table(sample_drb_de)
+
+## ------------------------------------------------------------------------
+drb1.01.de <- map_genotype_frequencies(err_tbl_drb1_de) %>%
+  dplyr::mutate(provenance = "DE")
+drb1.01.de %>% 
+  group_by(Class) %>% 
+  sample_n(5)
+
