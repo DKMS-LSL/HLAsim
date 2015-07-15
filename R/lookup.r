@@ -75,7 +75,6 @@ lookup_list <- function(alleles, eag) {
   ## and if alleles do not occur under the present NeXtype Basis
   ## we update the g_lookup table accordingly.
   g_styp <- strip_field_four(unlist(lapply(g_lookup$subtype, burst_subtypes)))
-  #g_styp <- unlist(lapply(g_lookup$subtype, burst_subtypes))
   missing_g_alleles <- Filter(function(x) !any(stwf(eag$eag_allele, x)), g_styp)
   g_lookup <- update_g_lookup(g_lookup, missing_g_alleles)
   g_styp <- g_styp[g_styp %ni% missing_g_alleles]
@@ -130,7 +129,7 @@ update_g_lookup <- function(g_lookup, missing_g_alleles) {
   lookup <- copy(g_lookup)
   styp <- strsplit(lookup$subtype, split = "/", fixed = TRUE)
   lookup[, subtype := unlist(Map(function(x) merge_subtypes(x[x %ni% missing_g_alleles]), styp))]
-  lookup[grepl("/", subtype, fixed = TRUE)]
+  lookup
 }
 
 #' @describeIn lookup_list

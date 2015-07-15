@@ -71,7 +71,7 @@ g_table <- function() {
     warning("Possibly malformed file \"hla_nom_g.txt\" ",
             "downloaded from http://hla.alleles.org.", immediate. = TRUE)
   }
-  rs <- read.csv(con, header = FALSE, sep = ";", comment.char = "#")
+  rs <- read.csv(con, header = FALSE, colClasses = "character", sep = ";", comment.char = "#")
   rs <- dplyr::tbl_dt(data.table::setDT(rs))
   data.table::setnames(rs, names(rs), c("gene", "subtype", "code"))
   rs <- rs[, gene := paste0("HLA-", sub("*", "", gene, fixed = TRUE))]

@@ -115,7 +115,7 @@ inject_errors <- function(x, cdf, perr, odds = 1) {
   dt <- rs[rs2, allow.cartesian = TRUE]
   dt <- dt[!is.na(genotype)]
   dt[, c("genotype", "eag_status") := do_inject(dt, mapargs)]
-  dt[, zygosity := ifelse(HLA::is_homozygous(genotype), "homozygous", "heterozygous")]
+  dt[, zygosity := ifelse(is_homozygous(genotype), "homozygous", "heterozygous")]
   dt[, genotype := ifelse(genotype == "NA/NA", NA_character_, genotype)]
   dt[, zygosity := ifelse(is.na(genotype), NA_character_,  zygosity)]
   dt[, conc := NULL]

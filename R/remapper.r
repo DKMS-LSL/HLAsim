@@ -58,7 +58,7 @@ make_remapper <- function(lookup) {
   enp <- ex3[, .(prob = .N/nrow(ex3)), by = eag_num]
 
   structure(memoise(function(a) {
-    if (is.na(x = a))
+    if (is.null(x = a) || is.na(x = a))
       return(eag_numbers(NA, NA))
 
     a1   <- allele(a, 1)
@@ -146,7 +146,7 @@ make_remapper <- function(lookup) {
           }
           else {
             nums3.1 <- nums3
-            enp2 <- if (!all(a2 %in% jkr)) {
+            enp2 <- if (!all(exa2 %in% jkr)) {
               crosscheck_eag_nums(rep = rep2)
             } else if (length(aa <- ex2[eag_num == nums2.1][!detect(eag_allele, rep1), eag_allele]) > 0) {
               ## check for additional diagonal allele matches
@@ -195,7 +195,7 @@ make_remapper <- function(lookup) {
           }
           else {
             nums3.2 <- nums3
-            enp2 <- if (!all(a1 %in% jkr)) {
+            enp2 <- if (!all(exa1 %in% jkr)) {
               crosscheck_eag_nums(rep = rep1)
             } else if (length(aa <- ex2[eag_num == nums2.2][!detect(eag_allele, rep2), eag_allele]) > 0) {
               ## check for additional diagonal allele matches
@@ -214,11 +214,11 @@ make_remapper <- function(lookup) {
         ## numbers of alleles associated with a number. Because
         ## both alleles are part of the joker group this should
         ## be safe.
-        enp2 <- if (!all(a1 %in% jkr)) {
+        enp2 <- if (!all(exa1 %in% jkr)) {
           crosscheck_eag_nums(rep = rep1)
         } else enp
         nums3.1 <- sample(enp2$eag_num, 1, prob = enp2$prob)
-        enp2 <- if (!all(a2 %in% jkr)) {
+        enp2 <- if (!all(exa2 %in% jkr)) {
           crosscheck_eag_nums(rep = rep2)
         } else enp
         nums3.2 <- sample(enp2$eag_num, 1, prob = enp2$prob)
