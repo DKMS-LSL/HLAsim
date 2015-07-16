@@ -64,12 +64,12 @@ g_table <- function() {
   con <- curl::curl("http://hla.alleles.org/wmda/hla_nom_g.txt")
   on.exit(close(con))
   tryCatch(open(con), error = function(e) {
-    stop("Trying to access http://hla.alleles.org: ", e$message, call. = FALSE)
+    stop("Trying to access http://hla.alleles.org/wmda/: ", e$message, call. = FALSE)
   })
 
   if (readLines(con, n = 1) != "# file: hla_nom_g.txt") {
     warning("Possibly malformed file \"hla_nom_g.txt\" ",
-            "downloaded from http://hla.alleles.org.", immediate. = TRUE)
+            "downloaded from http://hla.alleles.org/wmda/.", immediate. = TRUE)
   }
   rs <- read.csv(con, header = FALSE, sep = ";", comment.char = "#")
   rs <- dplyr::tbl_dt(data.table::setDT(rs))
