@@ -9,9 +9,9 @@ DQB1 <- HLAsim::HLA("DQB1", "01/01/2014", "23/03/2015")
 DPB1 <- HLAsim::HLA("DPB1", "01/01/2014", "23/03/2015")
 
 ## remove low-resolution four-digit codes and unknown alleles
-drb1 <- HLAsim:::clean_hla_data(DRB1)
-dqb1 <- HLAsim:::clean_hla_data(DQB1)
-dpb1 <- HLAsim:::clean_hla_data(DPB1)
+drb1 <- HLAsim::clean_hla_data(DRB1)
+dqb1 <- HLAsim::clean_hla_data(DQB1)
+dpb1 <- HLAsim::clean_hla_data(DPB1)
 
 devtools::use_data(drb1, overwrite = TRUE)
 devtools::use_data(dqb1, overwrite = TRUE)

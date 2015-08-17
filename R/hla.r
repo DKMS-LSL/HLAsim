@@ -139,8 +139,11 @@ print.HLA <- function(x, ...) {
   b.LIMS_DONOR_ID AS lims_donor_id,
   (CASE a.AUFTRAGGEBER
     WHEN 'DKMS'   THEN 'DE'
+    WHEN 'NKR'    THEN 'DE'
     WHEN 'DKMSUK' THEN 'UK'
     WHEN 'DKMSPL' THEN 'PL'
+    WHEN 'DKMSUS' THEN 'US'
+    WHEN 'EUROD'  THEN 'NL'
   END) AS provenance,
   b.ALLELE1 AS allele1,
   b.ALLELE2 AS allele2
@@ -148,7 +151,7 @@ print.HLA <- function(x, ...) {
   INNER JOIN LIMSREP.LIMS_AUFTRAEGE a
   ON b.LIMS_DONOR_ID = a.LIMS_DONOR_ID
   WHERE b.GENE         = '%s'%s
-  AND a.AUFTRAGGEBER IN ('DKMS', 'DKMSUK', 'DKMSPL')
+  AND a.AUFTRAGGEBER IN ('DKMS', 'DKMSUK', 'DKMSPL', 'DKMSUS', 'EUROD', 'NKR')
   AND (b.AUFLOESUNG  = 'H0' OR b.AUFLOESUNG = 'H1')
   AND (UPPER(b.ALLELE1) != 'NEW' OR UPPER(b.ALLELE2) != 'NEW')
   AND a.AUFTRAGSART  = 'NEUSPENDER'
