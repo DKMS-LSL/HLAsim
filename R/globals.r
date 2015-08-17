@@ -32,4 +32,18 @@ four_digit_codes <- list(
                  "16:01")
 )
 
+#' Remove low resolution four-digit codes and cases of unknown alleles
+#'
+#' @param x A \code{\link{HLA}} object
+#'
+#' @export
+clean_hla_data <- function(x) {
+  assert_that(is(x, "HLA"))
+  x <- x[!HLAsim:::chin(allele1, HLAsim:::four_digit_codes[[x$gene]]) &
+           !HLAsim:::chin(allele2, HLAsim:::four_digit_codes[[x$gene]])]
+  x <- x[HLAsim:::field2(allele1) != "XXX" &
+           HLAsim:::field2(allele2) != "XXX"]
+  x <- x[toupper(allele1) != "NEW" & toupper(allele2) != "NEW"]
+  x
+}
 

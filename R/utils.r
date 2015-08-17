@@ -136,17 +136,6 @@ at_least_two <- function(x) {
   if (length(x) == 1L) rep(x, 2) else x[order(x)]
 }
 
-## Remove low resolution four-digit codes and cases of unknown alleles
-clean_hla_data <- function(x) {
-  assertthat::assert_that(is(x, "HLA"))
-  x <- x[!HLAsim:::chin(allele1, HLAsim:::four_digit_codes[[x$gene]]) &
-         !HLAsim:::chin(allele2, HLAsim:::four_digit_codes[[x$gene]])]
-  x <- x[HLAsim:::field2(allele1) != "XXX" &
-         HLAsim:::field2(allele2) != "XXX"]
-  x <- x[toupper(allele1) != "NEW" & toupper(allele2) != "NEW"]
-  x
-}
-
 max_table <- function(x) {
   rs <- tabulate(x)
   levels(x)[rs == max(rs)]

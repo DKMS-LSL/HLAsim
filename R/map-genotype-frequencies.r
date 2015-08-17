@@ -57,7 +57,7 @@
 #' ans
 #' }
 map_genotype_frequencies <- function(x) {
-  assertthat::assert_that(is(x, "geno_table"))
+  assert_that(is(x, "geno_table"))
   ## get genotype frequencies based on remapped
   ## allele distribution
   g <- get("gtfrq", envir = attr(x, "penv"))

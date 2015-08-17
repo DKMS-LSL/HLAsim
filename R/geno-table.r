@@ -32,7 +32,7 @@
 #' rs
 #' }
 make_genotype_sampler <- function(x, eag) {
-  assertthat::assert_that(
+  assert_that(
     is(x, "HLA"),
     is(eag, "eag_tbl")
   )
@@ -310,7 +310,7 @@ remapper.genotype_sampler <- function(x) {
 
 slice_bins <- function(conc, bin_size) {
   if (is(conc, "data.table")) {
-    assertthat::assert_that('conc' %in% names(conc))
+    assert_that('conc' %in% names(conc))
     conc <- conc[, conc]
   }
   conc_max <- ceiling(max(conc))

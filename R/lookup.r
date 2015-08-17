@@ -40,7 +40,7 @@
 #' lookup <- lookup_list(alleles, eag)
 #' }
 lookup_list <- function(alleles, eag) {
-  assertthat::assert_that(
+  assert_that(
     all(is.hla(alleles)),
     is(eag, "eag_tbl")
   )
