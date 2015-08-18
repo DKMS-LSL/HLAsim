@@ -160,13 +160,10 @@ make_mapper <- function(lookup) {
     if (is.na(rs)) {
       return(rep_allele())
     }
-    a1_rep <- encode_ambiguities(x = allele(rs, 1), gtbl, ntbl2)
-    a2_rep <- encode_ambiguities(x = allele(rs, 2), gtbl, ntbl2)
-    if (a1_rep < a2_rep) {
-      rep_allele(a1_rep, a2_rep)
-    } else {
-      rep_allele(a2_rep, a1_rep)
-    }
+    rep1 <- encode_ambiguities(allele(rs, 1), gtbl, ntbl2)
+    rep2 <- encode_ambiguities(allele(rs, 2), gtbl, ntbl2)
+    sorted <- hla_sort(c(rep1, rep2))
+    rep_allele(sorted[1], sorted[2])
   }), class = c("mapper", "function"))
 }
 

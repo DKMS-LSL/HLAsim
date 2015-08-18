@@ -53,7 +53,10 @@ encode_ambiguities <- function(x, gtbl, ntbl2) {
   if (length(ans <- gtbl[subtype == merge_subtypes(x), code]) == 0) {
     if (length(ans <- strip_field_four(x)) > 1) {
       styp <- merge_nmdp_subtypes(x)
-      code <- ntbl2[subtype == styp, code]
+      if (length(code <- ntbl2[subtype == styp, code]) == 0) {
+        ## if this also fails, return the first allele
+        return(x[1L])
+      }
       ans <- paste0(field1(styp), ":", code)
     }
   }

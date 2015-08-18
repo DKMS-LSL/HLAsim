@@ -34,7 +34,8 @@
 make_genotype_sampler <- function(x, eag) {
   assert_that(
     is(x, "HLA"),
-    is(eag, "eag_tbl")
+    is(eag, "eag_tbl"),
+    x$gene == gene(eag)
   )
 
   foreach  <- foreach::foreach
@@ -70,13 +71,31 @@ make_genotype_sampler <- function(x, eag) {
  # dt_remap["04:02:01G/04:HJMR"]
 
   ## check the genotypes in x for mappability
-  unique_genotypes <- xtbl[, unique(genotype)]
+  unique_genotypes <- unique(xtbl$genotype)
   if (!in_knitr) {
     message("Ensuring mappability of ", length(unique_genotypes),
             " genotypes. This step will take a while ...\n", sep = "")
   }
   pbar <- utils::txtProgressBar(min = 0, max = length(unique_genotypes), style = 3)
   on.exit(close(pbar))
+  ## DEBUGGING START ####
+#   reps <- string2allele(unique(xtbl$genotype))
+#   rep <- reps[[1541]]
+#   debug(remap)
+#   i <- 1
+#   sink(file = "remap.log")
+#   for (rep in reps) {
+#     nums <- remap(rep)
+#     alls <- map(nums)
+#     ident <- rep == alls
+#     cat("[", i, "] ---------- ident = ", ident, "\n", sep = "")
+#     print(rep)
+#     print(nums)
+#     print(alls)
+#     i <- i + 1
+#   }
+#   sink()
+  ## DEBUGGING END####
   iREP <- iter(string2allele(unique_genotypes))
   unique_remapped_genotypes <- foreach(rep = iREP, cnt = icount()) %do% {
     if (!in_knitr)
@@ -94,6 +113,7 @@ make_genotype_sampler <- function(x, eag) {
 
   ## check for and remove genotypes that could not
   ## be mapped reliably: NA/NA or something like 03:/06:02:02
+  ## dt_remap[!is.genotype(genotype2)]
   invalid_gtps <- dt_remap[!is.genotype(genotype2), genotype]
   setkeyv(xtbl, "genotype")
   if (length(invalid_gtps) > 0) {

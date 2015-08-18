@@ -184,7 +184,7 @@ print.HLA <- function(x, ...) {
 .HLA$set("public", "allele_frequency", function() {
   if (!private$has_allele_freq()) {
     rs <- data.table::copy(self$get_table())
-    rs[, `:=`(provenance = NULL, genotype = NULL)]
+    rs[, `:=`(provenance = NULL, genotype = NULL, eag_status = NULL)]
     rs <- reshape2::melt(rs, id.vars = c("lims_donor_id", "zygosity"), value.name = "allele")
     data.table::setkeyv(rs, 'lims_donor_id')
     n <- nrow(rs)

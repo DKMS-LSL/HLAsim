@@ -51,8 +51,6 @@ allele2 <- function(x) {
   vapply(strsplit(x, split = "/", fixed = TRUE), `[`, 2, FUN.VALUE = "")
 }
 
-not_single <- function(x) length(x) != 1
-
 is_empty <- function(x) length(x) == 0
 
 none_empty <- function(...) {

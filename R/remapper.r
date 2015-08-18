@@ -72,6 +72,20 @@ make_remapper <- function(lookup) {
     nums2.1 <- unique(ex2[detect(eag_allele, rep1), eag_num])
     nums2.2 <- unique(ex2[detect(eag_allele, rep2), eag_num])
 
+    if (length(nums2.1) == 0L || length(nums2.2) == 0L) {
+      return(eag_numbers(NA, NA))
+    }
+
+    if (length(nums2.1) > 1L) {
+      warning("More than one EAG number for allele 1 exon 2. Using only the first!", call. = FALSE, immediate. = TRUE)
+      nums2.1 <- nums2.1[1]
+    }
+
+    if (length(nums2.2) > 1L) {
+      warning("More than one EAG number for allele 2 exon 2. Using only the first!", call. = FALSE, immediate. = TRUE)
+      nums2.2 <- nums2.2[1]
+    }
+
     ## Exon 3 gets special treatment due to the fact that some
     ## alleles may not be found in the lookup table but only
     ## exist as jokers.
@@ -80,7 +94,7 @@ make_remapper <- function(lookup) {
 
     # If both alleles on exon 3 have a single EAG number
     # each, no further checks are required.
-    if (not_single(nums3.1) || not_single(nums3.2)) {
+    if (length(nums3.1) != 1L || length(nums3.2) != 1L) {
       # Allele 1 and allele 2 have one or more EAG nums.
       if (none_empty(nums3.1, nums3.2)) {
         if (a1 == "05:RGPW") {
