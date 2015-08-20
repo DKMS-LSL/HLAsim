@@ -39,10 +39,9 @@ std::vector<int> fields_to_ints(const std::vector<std::string>& fields) {
       out[i] = std::stoi(fields[i]);
     } catch(std::invalid_argument&) {
       // Catches NMDP codes and sorts them to the front.
-      // NMDP codes themselves stay in input order. They
-      // shouldn't matter as they obviously never make an
-      // appearance as G-code subtypes.
-      out[i] = -1;
+      // NMDP codes themselves are sorted by their first letter only!
+      int tmp = fields[i][0];
+      out[i] = -100 + tmp;
     }
   }
   return out;
