@@ -59,6 +59,11 @@ print.HLA <- function(x, ...) {
   x$print(...)
 }
 
+#' @export
+gene.HLA <- function(x, ...) {
+  x$gene
+}
+
 # HLA-class --------------------------------------------------------------
 
 .HLA <- R6::R6Class(
@@ -82,7 +87,7 @@ print.HLA <- function(x, ...) {
       private$allele_table
     },
     set_table = function(tbl) {
-      private$allele_table <- tbl
+      private$allele_table <- check_hla_allele_tbl(tbl)
     },
     refresh = function(gene = NULL, from = NULL, to = NULL) {
       self$gene <- if (!is.null(gene)) match_hla_gene(gene) else self$gene
@@ -120,6 +125,11 @@ print.HLA <- function(x, ...) {
     }
   )
 )
+
+check_hla_allele_tbl <- function(tbl) {
+  ## TODO
+  tbl
+}
 
 .HLA$set("private", "fetch", function() {
   gene <- self$gene

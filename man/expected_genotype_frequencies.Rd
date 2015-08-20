@@ -12,7 +12,7 @@ expected_genotype_frequencies(alleles, frequencies)
 \item{frequencies}{The corresponding allele frequencies.}
 }
 \value{
-A table with two columns:
+A data table with two columns:
 \itemize{
  \item{genotype}
  \item{pexp}

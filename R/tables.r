@@ -128,8 +128,8 @@ eag_table <- function(gene = "DPB1", nextype_basis_id = "1412") {
     a.eag_num AS eag_num, a.nmdp_new AS eag_allele,
     TO_NUMBER(b.exon) AS exon, a.allele_id, a.dna_version_id,
     a.allele_num
-  FROM ngsrep.nextype_alleles_per_eag a
-  INNER JOIN ngsrep.nextype_eags b
+  FROM ngsrep.nextype_alleles_per_eag_old1 a
+  INNER JOIN ngsrep.nextype_eags_old1 b
   ON a.eag_num           = b.eag_num
   WHERE a.gene           = '%s'
   AND a.nextype_basis_id = %s"
@@ -224,18 +224,16 @@ gtf_table.HLA <- function(x) {
   ## purge existing genotype/allele frequencies
   x$purge_frequencies()
   ## calculate observed genotype frequencies
-  obs_gtf <- x$genotype_frequency()
-  obs_gtf <- obs_gtf[, .(genotype, pobs = frequency)]
+  gtf_obs <- dplyr::select(x$genotype_frequency(), genotype, pobs = frequency)
   ## calculate expected genotype frequencies
   af <- x$allele_frequency()
-  exp_gtf <- expected_genotype_frequencies(af$allele, af$frequency)
+  gtf_exp <- expected_genotype_frequencies(alleles = af$allele, frequencies = af$frequency)
   ## Which theoretically possible genotypes are missing from the sample
-  missing <- exp_gtf[!as.character(exp_gtf[, genotype]) %chin%
-                     as.character(obs_gtf[, genotype])]
+  missing <- gtf_exp[!as.character(gtf_exp$genotype) %chin% as.character(gtf_obs$genotype)]
   ## Setting P_obs zero and merge with the table of observed frequencies.
   missing <- missing[, `:=`(pexp = NULL, pobs = 0)]
-  obs_gtf <- rbind(obs_gtf, missing)
-  gtf <- exp_gtf[obs_gtf][order(-pexp)]
+  gtf_obs <- rbind(gtf_obs, missing)
+  gtf <- gtf_exp[gtf_obs][order(-pexp)]
   gtf <- gtf[, `:=`(log_pexp = base::log(pexp), log_pobs = base::log(pobs))]
   ## replace -Inf with -30 as lower bound at the log scale
   gtf <- gtf[, log_pobs := ifelse(log_pobs == -Inf, -30, log_pobs)]
