@@ -35,7 +35,7 @@ make_genotype_sampler <- function(x, eag) {
   assert_that(
     is(x, "HLA"),
     is(eag, "eag_tbl"),
-    x$gene == gene(eag)
+    gene(x) == gene(eag)
   )
 
   foreach  <- foreach::foreach
@@ -80,8 +80,8 @@ make_genotype_sampler <- function(x, eag) {
   on.exit(close(pbar))
   ## DEBUGGING START ####
 #   reps <- string2allele(unique(xtbl$genotype))
-#   rep <- reps[[1541]]
-#   debug(remap)
+#   #rep <- reps[[154]]
+#   #undebug(remap)
 #   i <- 1
 #   sink(file = "remap.log")
 #   for (rep in reps) {

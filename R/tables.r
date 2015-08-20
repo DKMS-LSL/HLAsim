@@ -123,6 +123,7 @@ eag_table <- function(gene = "DPB1", nextype_basis_id = "1412") {
          call. = FALSE)
   }
   gene <- match_hla_gene(gene)
+  ## TODO: Revert table names once migration is finished
   fmt <- "
   SELECT
     a.eag_num AS eag_num, a.nmdp_new AS eag_allele,
@@ -272,9 +273,10 @@ joker_table <- function(eag) {
            `HLA-DRB1` = drb1_jokers1412,
            `HLA-DPB1` = dpb1_jokers1412)
   } else {
+    ## TODO: Revert table names once migration is finished
     fmt <- "
     SELECT joker_num, allele_num, nmdp_new AS eag_allele
-    FROM ngsrep.nextype_jokers
+    FROM ngsrep.nextype_jokers_old1
     WHERE gene         = '%s'
     AND dna_version_id = %s
     AND exon           = %s"
@@ -296,18 +298,19 @@ partials_table <- function(eag) {
            `HLA-DRB1` = drb1_partials1412,
            `HLA-DPB1` = dpb1_partials1412)
   } else {
+    ## TODO: Revert table names once migration is finished
     fmt <- "
     SELECT a.allele_num,
     b.nmdp_new AS eag_allele
-    FROM ngsrep.nextype_partials a
-    INNER JOIN ngsrep.NEXTYPE_ALLELES_PER_EAG b
-    ON a.ALLELE_NUM_PARTIAL = b.ALLELE_NUM
-    AND a.DNA_VERSION_ID    = b.DNA_VERSION_ID
-    AND a.GENE              = b.GENE
-    WHERE a.GENE            = '%s'
-    AND b.DNA_VERSION_ID    = '%s'
-    AND a.EXON              = %s
-    AND b.NEXTYPE_BASIS_ID  = %s"
+    FROM ngsrep.nextype_partials_old1 a
+    INNER JOIN ngsrep.nextype_alleles_per_eag_OLD1 b
+    ON a.allele_num_partial = b.allele_num
+    AND a.dna_version_id    = b.dna_version_id
+    AND a.gene              = b.gene
+    WHERE a.gene            = '%s'
+    AND b.dna_version_id    = '%s'
+    AND a.exon              = %s
+    AND b.nextype_basis_id  = %s"
     rs <- orcl::ora_query(sprintf(fmt, gene, dna_version_id, exon, nextype_basis_id))
     setkeyv(rs, "allele_num")
   }
