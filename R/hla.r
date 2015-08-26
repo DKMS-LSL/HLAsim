@@ -194,17 +194,17 @@ check_hla_allele_tbl <- function(tbl) {
 .HLA$set("public", "allele_frequency", function() {
   if (!private$has_allele_freq()) {
     rs <- data.table::copy(self$get_table())
-    rs[, `:=`(provenance = NULL, genotype = NULL, eag_status = NULL)]
-    rs <- reshape2::melt(rs, id.vars = c("lims_donor_id", "zygosity"), value.name = "allele")
+    rs <- rs[, list(lims_donor_id, allele1, allele2, zygosity)]
+    rs <- tidyr::gather_(rs, "allele", "allele_name", c("allele1", "allele2"))
     data.table::setkeyv(rs, 'lims_donor_id')
     n <- nrow(rs)
     rs <- rs[, list(
       count     = .N,
       frequency = .N/n
-    ), by = "allele"][order(-count)]
+    ), by = "allele_name"][order(-count)]
     rs[, cumsum := cumsum(frequency)]
-    rs[, allele := factor(allele, levels = allele, ordered = TRUE)]
-    private$allele_freq <- dplyr::tbl_dt(rs)
+    #rs[, allele := factor(allele, levels = allele, ordered = TRUE)]
+    private$allele_freq <- rs
   }
   private$allele_freq
 })

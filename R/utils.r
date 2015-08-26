@@ -163,7 +163,43 @@ strsplitN <- function(x, split, n, from = "start", collapse = split, ...) {
   unlist(.mapply(function(x, n) paste0(x[n], collapse = collapse), list(x = xs, n = n), NULL))
 }
 
+starts_with <- function(p, s, ignore.case = FALSE) {
+  p <- paste0("^", p, ".*$")
+  grepl(p, s, fixed = FALSE, perl = FALSE, ignore.case = ignore.case)
+}
 
+map_nextype_basis_to_dna_version <- function() {
+  stmt <- '
+  select distinct nextype_basis_id, dna_version_id
+  from ngsrep.nextype_alleles_per_eag'
+  rs <- tbl_dt(orcl::ora_query(stmt))
+  setkeyv(rs, "nextype_basis_id")
+  rs
+}
 
+map_dna_version_to_nextype_basis <- function() {
+  rs1 <- map_nextype_basis_to_dna_version()
+  stmt <- '
+  select nextype_basis_id,
+    count(lims_donor_id) as count
+  from ngsrep.res_nmdp_codes
+  group by nextype_basis_id
+  order by count(lims_donor_id)'
+  rs2 <- tbl_dt(orcl::ora_query(stmt))
+  setkeyv(rs2, "nextype_basis_id")
+  left_join(rs1, rs2, by = "nextype_basis_id") %>%
+    group_by(dna_version_id) %>%
+    dplyr::filter(min_rank(desc(count)) == 1) %>%
+    ungroup() %>%
+    dplyr::select(dna_version_id, nextype_basis_id)
+}
 
+#' @export
+dna2basis <- function(id) {
+  dna2basis_[dna_version_id == id, nextype_basis_id]
+}
 
+#' @export
+basis2dna <- function(id) {
+  basis2dna_[nextype_basis_id == id, dna_version_id]
+}

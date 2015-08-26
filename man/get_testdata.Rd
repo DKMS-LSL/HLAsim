@@ -4,7 +4,7 @@
 \alias{get_testdata}
 \title{Retrieve testing data from ngsrep for a gene}
 \usage{
-get_testdata(gene = "DRB1", nextype_basis_id = "1267")
+get_testdata(gene, nextype_basis_id)
 }
 \arguments{
 \item{gene}{A HLA gene.}

@@ -129,8 +129,8 @@ eag_table <- function(gene = "DPB1", nextype_basis_id = "1412") {
     a.eag_num AS eag_num, a.nmdp_new AS eag_allele,
     TO_NUMBER(b.exon) AS exon, a.allele_id, a.dna_version_id,
     a.allele_num
-  FROM ngsrep.nextype_alleles_per_eag_old1 a
-  INNER JOIN ngsrep.nextype_eags_old1 b
+  FROM ngsrep.nextype_alleles_per_eag a
+  INNER JOIN ngsrep.nextype_eags b
   ON a.eag_num           = b.eag_num
   WHERE a.gene           = '%s'
   AND a.nextype_basis_id = %s"
@@ -149,8 +149,8 @@ eag_table <- function(gene = "DPB1", nextype_basis_id = "1412") {
 
 #' @export
 print.eag_tbl <- function(x, ..., n = 5) {
-  fmt <- "EAG table [Gene: %s, BasisID: %s]\n"
-  cat(sprintf(fmt, gene(x), nextype_basis_id(x)), sep = "")
+  fmt <- "EAG table [Gene: %s, BasisID: %s, DNAversion: %s]\n"
+  cat(sprintf(fmt, gene(x), nextype_basis_id(x), dna_version_id(x)), sep = "")
   NextMethod(n = n)
 }
 
@@ -276,7 +276,7 @@ joker_table <- function(eag) {
     ## TODO: Revert table names once migration is finished
     fmt <- "
     SELECT joker_num, allele_num, nmdp_new AS eag_allele
-    FROM ngsrep.nextype_jokers_old1
+    FROM ngsrep.nextype_jokers
     WHERE gene         = '%s'
     AND dna_version_id = %s
     AND exon           = %s"
@@ -302,8 +302,8 @@ partials_table <- function(eag) {
     fmt <- "
     SELECT a.allele_num,
     b.nmdp_new AS eag_allele
-    FROM ngsrep.nextype_partials_old1 a
-    INNER JOIN ngsrep.nextype_alleles_per_eag_OLD1 b
+    FROM ngsrep.nextype_partials a
+    INNER JOIN ngsrep.nextype_alleles_per_eag b
     ON a.allele_num_partial = b.allele_num
     AND a.dna_version_id    = b.dna_version_id
     AND a.gene              = b.gene
