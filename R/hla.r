@@ -195,13 +195,13 @@ check_hla_allele_tbl <- function(tbl) {
   if (!private$has_allele_freq()) {
     rs <- data.table::copy(self$get_table())
     rs <- rs[, list(lims_donor_id, allele1, allele2, zygosity)]
-    rs <- tidyr::gather_(rs, "allele", "allele_name", c("allele1", "allele2"))
+    rs <- tidyr::gather_(rs, "num", "allele", c("allele1", "allele2"))
     data.table::setkeyv(rs, 'lims_donor_id')
     n <- nrow(rs)
     rs <- rs[, list(
       count     = .N,
       frequency = .N/n
-    ), by = "allele_name"][order(-count)]
+    ), by = "allele"][order(-count)]
     rs[, cumsum := cumsum(frequency)]
     #rs[, allele := factor(allele, levels = allele, ordered = TRUE)]
     private$allele_freq <- rs
@@ -212,8 +212,7 @@ check_hla_allele_tbl <- function(tbl) {
 .HLA$set("public", "genotype_frequency", function() {
   if (!private$has_genotype_freq()) {
     rs <- data.table::copy(self$get_table())
-    rs[, `:=`(provenance = NULL)]
-    ## sort by genotype
+    rs <- rs[, list(genotype)]
     data.table::setkeyv(rs, 'genotype')
     n <- nrow(rs)
     rs <- rs[, list(
@@ -226,8 +225,8 @@ check_hla_allele_tbl <- function(tbl) {
       allele1 = vapply(alleles, "[", 1L, FUN.VALUE = character(1)),
       allele2 = vapply(alleles, "[", 2L, FUN.VALUE = character(1))
     )]
-    rs[, genotype := factor(genotype, levels = genotype, ordered = TRUE)]
-    private$genotype_freq <- dplyr::tbl_dt(rs)
+    #rs[, genotype := factor(genotype, levels = genotype, ordered = TRUE)]
+    private$genotype_freq <- rs
   }
   private$genotype_freq
 })
