@@ -29,5 +29,7 @@ Imports:
     R6,
     stringi,
     tidyr
+Remotes:
+    github::hadley/purrr
 LinkingTo: Rcpp
 VignetteBuilder: knitr

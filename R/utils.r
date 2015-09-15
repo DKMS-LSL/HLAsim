@@ -196,10 +196,12 @@ map_dna_version_to_nextype_basis <- function() {
 
 #' @export
 dna2basis <- function(id) {
+  data(dna2basis_, package = "HLAsim", envir = environment())
   dna2basis_[dna_version_id == id, nextype_basis_id]
 }
 
 #' @export
 basis2dna <- function(id) {
+  data(basis2dna_, package = "HLAsim", envir = environment())
   basis2dna_[nextype_basis_id == id, dna_version_id]
 }

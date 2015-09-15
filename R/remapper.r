@@ -29,13 +29,13 @@ make_remapper <- function(lookup) {
     prt3.2[, allele_num := NULL]
     prt3.2[, eag_allele := vapply(hla_burst(eag_allele), function(x) hla_collapse(x[1:2]), "")]
     prt3.2 <- unique(prt3.2)
-    Map(function(nums) enp[eag_num == nums][, prob := prob/sum(prob)],
+    Map(function(nums) enp[eag_num %in% nums][, prob := prob/sum(prob)],
         nums = split(prt3.2$eag_num, prt3.2$eag_allele))
   }
 
   crosscheck_eag_nums <- function(rep) {
     nums <- unique(prt3[detect(eag_allele, rep), eag_num])
-    enp[eag_num == nums][, prob := prob/sum(prob)]
+    enp[eag_num %in% nums][, prob := prob/sum(prob)]
   }
 
   ## global objects
@@ -51,6 +51,7 @@ make_remapper <- function(lookup) {
   prt3  <- rbind(ex3, get_partials(ex3, prt = lookup$prt_tbl))
   gtbl  <- lookup$gtbl
   ntbl4 <- lookup$ntbl4
+  lra   <- lookup$lra
 
   ## DT of unique exon 3 EAGs and their approximate probability
   ## of accurance simply based on how many alleles they stand
@@ -71,6 +72,23 @@ make_remapper <- function(lookup) {
 
     nums2.1 <- unique(ex2[detect(eag_allele, rep1), eag_num])
     nums2.2 <- unique(ex2[detect(eag_allele, rep2), eag_num])
+
+    ## update exa and rep if it's a low resolution allele
+    if (any(exa1 %in% lra)) {
+      tmp_rep <- ptn(ex2[eag_num %in% nums2.1, eag_allele])
+      tmp <- rle(sort(ex2[detect(eag_allele, tmp_rep), eag_num]))
+      nums2.1 <- tmp$values[which.max(tmp$lengths)]
+      exa1 <- ex2[eag_num %in% nums2.1, eag_allele]
+      rep1 <- ptn(exa1)
+    }
+
+    if (any(exa2 %in% lra)) {
+      tmp_rep <- ptn(ex2[eag_num %in% nums2.2, eag_allele])
+      tmp <- rle(sort(ex2[detect(eag_allele, tmp_rep), eag_num]))
+      nums2.2 <- tmp$values[which.max(tmp$lengths)]
+      exa2 <- ex2[eag_num %in% nums2.2, eag_allele]
+      rep2 <- ptn(exa2)
+    }
 
     if (length(nums2.1) == 0L || length(nums2.2) == 0L) {
       return(eag_numbers(NA, NA))
@@ -97,10 +115,10 @@ make_remapper <- function(lookup) {
     if (length(nums3.1) != 1L || length(nums3.2) != 1L) {
       # Allele 1 and allele 2 have one or more EAG nums.
       if (none_empty(nums3.1, nums3.2)) {
-        if (a1 == "05:RGPW") {
+        if (a1 %in% c("05:RGPW", "07:01:01G")) {
           nums3.1 <- unique(nums3.1[duplicated(nums3.1)])
         }
-        if (a2 == "05:RGPW") {
+        if (a2 %in% c("05:RGPW", "07:01:01G")) {
           nums3.2 <- unique(nums3.2[duplicated(nums3.2)])
         }
         # Both alleles have ambiguity codes and an intersection
@@ -164,7 +182,7 @@ make_remapper <- function(lookup) {
               crosscheck_eag_nums(rep = rep2)
             } else if (length(aa <- ex2[eag_num == nums2.1][!detect(eag_allele, rep1), eag_allele]) > 0) {
               ## check for additional diagonal allele matches
-              rs <- enp[eag_num == setdiff(enp$eag_num, crosscheck_eag_nums(rep = ptn(aa))$eag_num)]
+              rs <- enp[eag_num %in% setdiff(enp$eag_num, crosscheck_eag_nums(rep = ptn(aa))$eag_num)]
               rs[, prob := prob/sum(prob)]
             } else enp
             nums3.2 <- sample(enp2$eag_num, 1, prob = enp2$prob)
@@ -213,7 +231,7 @@ make_remapper <- function(lookup) {
               crosscheck_eag_nums(rep = rep1)
             } else if (length(aa <- ex2[eag_num == nums2.2][!detect(eag_allele, rep2), eag_allele]) > 0) {
               ## check for additional diagonal allele matches
-              rs <- enp[eag_num == setdiff(enp$eag_num, crosscheck_eag_nums(rep = ptn(aa))$eag_num)]
+              rs <- enp[eag_num %in% setdiff(enp$eag_num, crosscheck_eag_nums(rep = ptn(aa))$eag_num)]
               rs[, prob := prob/sum(prob)]
             } else enp
 

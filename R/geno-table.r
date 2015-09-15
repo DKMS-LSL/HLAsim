@@ -61,14 +61,12 @@ make_genotype_sampler <- function(x, eag) {
   ## a list of lookup tables matching alleles and EAG numbers
   ## for exons 2 and 3, jokers, and partials
   lookup  <- lookup_list(alleles, eag)
+
   ## a function that maps eag_nums to alleles
   map     <- make_mapper(lookup)
+
   ## a function that maps alleles to eag_nums
   remap   <- make_remapper(lookup)
-
- # xtbl[genotype == "04:02:01G/04:HJMR"]
- # allele2string(list(map(remap(string2allele("04:02:01G/04:HJMR")[[1]]))))
- # dt_remap["04:02:01G/04:HJMR"]
 
   ## check the genotypes in x for mappability
   unique_genotypes <- unique(xtbl$genotype)
@@ -79,22 +77,40 @@ make_genotype_sampler <- function(x, eag) {
   pbar <- utils::txtProgressBar(min = 0, max = length(unique_genotypes), style = 3)
   on.exit(close(pbar))
   ## DEBUGGING START ####
-#   reps <- string2allele(unique(xtbl$genotype))
-#   #rep <- reps[[154]]
-#   #undebug(remap)
-#   i <- 1
-#   sink(file = "remap.log")
-#   for (rep in reps) {
-#     nums <- remap(rep)
-#     alls <- map(nums)
-#     ident <- rep == alls
-#     cat("[", i, "] ---------- ident = ", ident, "\n", sep = "")
-#     print(rep)
-#     print(nums)
-#     print(alls)
+#     reps <- string2allele(unique(xtbl$genotype))
+#     i <- 7
+#     (rep <- reps[[i]])
+#     (nums <- remap(rep))
+#     (alls <- map(nums))
 #     i <- i + 1
-#   }
-#   sink()
+#     memoise::forget(remap)
+#     debug(remap)
+#     undebug(remap)
+#     memoise::forget(map)
+#     debug(map)
+#     undebug(remap)
+#
+#     af <- x$allele_frequency()
+#     gtf <- x$genotype_frequency()
+#     a <- "02:01:01"
+#     b <- "02:02:02"
+#     af[starts_with(a, allele)]
+#     af[starts_with(b, allele)]
+#     gtf[genotype == paste(hla_sort(c(a, b)), collapse = "/")]
+#
+#     sink(file = "remap_dqb1.log")
+#     i <- 1
+#     for (rep in string2allele(unique(xtbl$genotype))) {
+#       nums <- remap(rep)
+#       alls <- map(nums)
+#       ident <- rep == alls
+#       cat("[", i, "] ---------- ident = ", ident, "\n", sep = "")
+#       print(rep)
+#       print(nums)
+#       print(alls)
+#       i <- i + 1
+#     }
+#     sink()
   ## DEBUGGING END####
   iREP <- iter(string2allele(unique_genotypes))
   unique_remapped_genotypes <- foreach(rep = iREP, cnt = icount()) %do% {
@@ -124,8 +140,6 @@ make_genotype_sampler <- function(x, eag) {
   ## Calculate genotype frequencies based on
   ## the remapped genotypes
   tbl2 <- xtbl[dt_remap]
-  #tbl2[genotype == "04:02:01G/04:HJMR"]
-
   tbl2 <- tbl2[, genotype := NULL]
   setnames(tbl2, "genotype2", "genotype")
   tbl2 <- tbl2[, `:=`(

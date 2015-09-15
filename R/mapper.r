@@ -35,6 +35,7 @@ make_mapper <- function(lookup) {
   gtbl  <- lookup$gtbl
   jkr   <- lookup$jkr_tbl$eag_allele
   prt   <- lookup$prt_tbl
+  lra   <- lookup$lra
 
   structure(memoise(function(nums) {
     stopifnot(is(nums, "eag_numbers"))

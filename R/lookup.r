@@ -70,6 +70,10 @@ lookup_list <- function(alleles, eag) {
   ## constructing the exon-specific lookup table.
   alleles <- alleles[!is_ambiguous(alleles)]
 
+  ## Low resolution alleles not present in the EAG table are filtered
+  ## out and preserved in the lookup list
+  low_res_alleles <- setdiff(alleles, strip_field_four(eag$eag_allele))
+
   ## Alleles reported as G codes are expanded into their subtypes.
   ## We check for the occurrence of these alleles in the EAG table
   ## and if alleles do not occur under the present NeXtype Basis
@@ -95,7 +99,8 @@ lookup_list <- function(alleles, eag) {
     prt_tbl = partials_table(eag),
     ntbl2   = nmdp_lookup,
     ntbl4   = exp_nmdp_lookup,
-    gtbl    = g_lookup
+    gtbl    = g_lookup,
+    lra     = low_res_alleles
   ),
   nextype_basis_id = nextype_basis_id(eag),
   gene             = gene(eag),
