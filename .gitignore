@@ -2,7 +2,7 @@
 .Rhistory
 .RData
 scratch.[rR]
-testing*.[rR]
+testing-*.[rR]
 EAG*
 *.log
 vignettes/*_cache
