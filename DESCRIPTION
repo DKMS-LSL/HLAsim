@@ -1,10 +1,11 @@
 Package: HLAsim
 Title: Simulate allelic dropouts in HLA data
-Version: 0.0.3.9001
+Version: 0.0.3.9002
 Authors@R: person("Gerhard", "Schöfl", role = c("aut", "cre"),
                   email = "Schoefl@dkms-lab.de")
 Description: Simulate allelic dropouts in HLA data.
-Depends: R (>= 3.2.0)
+Depends:
+    R (>= 3.2.0)
 License: MIT + file LICENSE
 Suggests:
     orcl,
@@ -29,7 +30,6 @@ Imports:
     R6,
     stringi,
     tidyr
-Remotes:
-    github::hadley/purrr
 LinkingTo: Rcpp
 VignetteBuilder: knitr
+RoxygenNote: 5.0.0

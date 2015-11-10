@@ -169,11 +169,17 @@ starts_with <- function(p, s, ignore.case = FALSE) {
 }
 
 map_nextype_basis_to_dna_version <- function() {
-  stmt <- '
+  stmt1 <- '
+  select distinct basis_id as nextype_basis_id, dna_version_id
+  from ngs.res_basis'
+  rs <- tbl_dt(orcl::ora_query(stmt1, user = "nextype_master"))
+  stmt2 <- '
   select distinct nextype_basis_id, dna_version_id
   from ngsrep.nextype_alleles_per_eag'
-  rs <- tbl_dt(orcl::ora_query(stmt))
+  rs2 <- tbl_dt(orcl::ora_query(stmt2, user = "ngsread"))
+  rs <- rbind(rs, rs2)
   setkeyv(rs, "nextype_basis_id")
+  rs <- rs[!duplicated(rs)]
   rs
 }
 
