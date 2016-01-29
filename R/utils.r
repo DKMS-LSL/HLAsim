@@ -16,7 +16,7 @@ chin <- data.table::`%chin%`
 
 `%.%` <- purrr::compose
 
-`%||%` <- function (a, b) if (is.empty(a)) b else a
+`%||%` <- function(a, b) if (is.empty(a)) b else a
 
 hla_burst <- function(a) {
   strsplit(a, split = ":", fixed = TRUE)
@@ -113,6 +113,7 @@ maybe_exon_shuffling <- function(a) {
 }
 
 match_hla_gene <- function(gene) {
+  assertive::assert_is_scalar(gene)
   gene <- match.arg(gene, c("A", "B", "C", "DPB1", "DRB1", "DQB1"))
   paste0('HLA-', gene)
 }
@@ -140,7 +141,7 @@ max_table <- function(x) {
 }
 
 allele2string <- function(x, split = "/", ...) {
-  purrr::map_v(x, ~ paste0(., collapse = split))
+  purrr::map_chr(x, ~ paste0(., collapse = split))
 }
 
 string2allele <- function(x, split = "/", ...) {
@@ -166,48 +167,4 @@ strsplitN <- function(x, split, n, from = "start", collapse = split, ...) {
 starts_with <- function(p, s, ignore.case = FALSE) {
   p <- paste0("^", p, ".*$")
   grepl(p, s, fixed = FALSE, perl = FALSE, ignore.case = ignore.case)
-}
-
-map_nextype_basis_to_dna_version <- function() {
-  stmt1 <- '
-  select distinct basis_id as nextype_basis_id, dna_version_id
-  from ngs.res_basis'
-  rs <- tbl_dt(orcl::ora_query(stmt1, user = "nextype_master"))
-  stmt2 <- '
-  select distinct nextype_basis_id, dna_version_id
-  from ngsrep.nextype_alleles_per_eag'
-  rs2 <- tbl_dt(orcl::ora_query(stmt2, user = "ngsread"))
-  rs <- rbind(rs, rs2)
-  setkeyv(rs, "nextype_basis_id")
-  rs <- rs[!duplicated(rs)]
-  rs
-}
-
-map_dna_version_to_nextype_basis <- function() {
-  rs1 <- map_nextype_basis_to_dna_version()
-  stmt <- '
-  select nextype_basis_id,
-    count(lims_donor_id) as count
-  from ngsrep.res_nmdp_codes
-  group by nextype_basis_id
-  order by count(lims_donor_id)'
-  rs2 <- tbl_dt(orcl::ora_query(stmt))
-  setkeyv(rs2, "nextype_basis_id")
-  left_join(rs1, rs2, by = "nextype_basis_id") %>%
-    group_by(dna_version_id) %>%
-    dplyr::filter(min_rank(desc(count)) == 1) %>%
-    ungroup() %>%
-    dplyr::select(dna_version_id, nextype_basis_id)
-}
-
-#' @export
-dna2basis <- function(id) {
-  data(dna2basis_, package = "HLAsim", envir = environment())
-  dna2basis_[dna_version_id == id, nextype_basis_id]
-}
-
-#' @export
-basis2dna <- function(id) {
-  data(basis2dna_, package = "HLAsim", envir = environment())
-  basis2dna_[nextype_basis_id == id, dna_version_id]
 }

@@ -60,7 +60,7 @@ gtbl_dpb1_uk <- sample_dpb_uk(concentration[provenance == "UK"], n, bin_width)
 
 gtbl_drb1_de
 
-## ----inject_error, cache=TRUE--------------------------------------------
+## ----inject_error, cache=TRUE, warning=FALSE-----------------------------
 ## DRB1
 err_tbl_drb1_de <- inject_errors(gtbl_drb1_de, cdfA, perr = 0.01, odds = 0.25)
 err_tbl_drb1_pl <- inject_errors(gtbl_drb1_pl, cdfA, perr = 0.01, odds = 0.25)
@@ -90,7 +90,8 @@ summarise_gtbl <- function(x) {
   tbl <- summary(x) %>%
     dplyr::select(-pHet, -nerr) %>%
     tidyr::gather(type, proportion, pHom:pNA) %>%
-    dplyr::tbl_df()
+    dplyr::tbl_df() %>% 
+    dplyr::mutate(type = factor(type, levels = c("pHom", "pHetIdent", "pHetDiff", "pNA")))
   levels(tbl$type) <- c("erroneous HM", "unchanged HT", "erroneous HT", "incomp. exons")
   tbl
 }
@@ -100,7 +101,7 @@ tbls.summary <- tbl_dt(foreach(tbl = tbls, .combine = "rbind") %do% {
   gene <- toupper(strsplit(tbl, "_")[[1]][3])
   provenance <- toupper(strsplit(tbl, "_")[[1]][4])
   summarise_gtbl(get(tbl)) %>%
-    mutate(provenance = provenance, gene = gene)
+    mutate(provenance = provenance, gene = factor(gene, levels = c("DRB1", "DQB1", "DPB1")))
 })
 
 ggplot(tbls.summary, aes(x = type, y = proportion, fill = provenance)) +
@@ -120,10 +121,10 @@ ggplot(tbls.summary, aes(x = type, y = proportion, fill = provenance)) +
 ## ------------------------------------------------------------------------
 gtf_table(sample_drb_de)
 
-## ------------------------------------------------------------------------
+## ---- eval=TRUE----------------------------------------------------------
 drb1.01.de <- map_genotype_frequencies(err_tbl_drb1_de) %>%
   dplyr::mutate(provenance = "DE")
 drb1.01.de %>% 
-  group_by(Class) %>% 
-  sample_n(5)
+  dplyr::group_by(Class) %>% 
+  dplyr::sample_n(5)
 

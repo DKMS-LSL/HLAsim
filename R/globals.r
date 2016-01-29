@@ -38,7 +38,7 @@ four_digit_codes <- list(
 #'
 #' @export
 clean_hla_data <- function(x) {
-  assert_that(is(x, "HLA"))
+  assertive::assert_is_any_of(x, "HLA")
   #x <- x[!HLAsim:::chin(allele1, HLAsim:::four_digit_codes[[x$gene]]) &
   #         !HLAsim:::chin(allele2, HLAsim:::four_digit_codes[[x$gene]])]
   x <- x[field2(allele1) != "XXX" & field2(allele2) != "XXX"]

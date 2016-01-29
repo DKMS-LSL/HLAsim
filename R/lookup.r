@@ -40,10 +40,9 @@
 #' lookup <- lookup_list(alleles, eag)
 #' }
 lookup_list <- function(alleles, eag) {
-  assert_that(
-    all(is.hla(alleles)),
-    is(eag, "eag_tbl")
-  )
+  assertive::assert_is_any_of(eag, "eag_tbl")
+  assertive::assert_all_are_true(is.hla(alleles))
+
   stwf <- stringi::stri_startswith_fixed
   `%do%` <- foreach::`%do%`
 

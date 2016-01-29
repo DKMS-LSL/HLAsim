@@ -32,11 +32,9 @@
 #' rs
 #' }
 make_genotype_sampler <- function(x, eag) {
-  assert_that(
-    is(x, "HLA"),
-    is(eag, "eag_tbl"),
-    gene(x) == gene(eag)
-  )
+  assertive::assert_is_any_of(x, "HLA")
+  assertive::assert_is_any_of(eag, "eag_tbl")
+  assertive::assert_are_identical(gene(x), gene(eag))
 
   foreach  <- foreach::foreach
   `%do%`   <- foreach::`%do%`
@@ -123,7 +121,7 @@ make_genotype_sampler <- function(x, eag) {
   dt_remap <- data.table(
     genotype   = unique_genotypes,
     genotype2  = allele2string(unique_remapped_genotypes),
-    eag_status = unlist(purrr::map(unique_remapped_genotypes, ~eag_status(remap(.))))
+    eag_status = purrr::map_chr(unique_remapped_genotypes, ~eag_status(remap(.)))
   )
   setkeyv(dt_remap, "genotype")
 
@@ -344,7 +342,7 @@ remapper.genotype_sampler <- function(x) {
 
 slice_bins <- function(conc, bin_size) {
   if (is(conc, "data.table")) {
-    assert_that('conc' %in% names(conc))
+    assertive::assert_is_superset(names(conc), "conc")
     conc <- conc[, conc]
   }
   conc_max <- ceiling(max(conc))

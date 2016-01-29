@@ -54,7 +54,7 @@
 #' merge(ans)
 #' }
 inject_errors <- function(x, cdf, perr, odds = 1) {
-  assert_that(is(x, "geno_table"))
+  assertive::assert_is_any_of(x, "geno_table")
 
   if (nrow(errors(x)) > 0) {
     warning("This <geno_table> has already errors injected", immediate. = TRUE)

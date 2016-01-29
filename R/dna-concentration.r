@@ -100,7 +100,7 @@ dkms_dna_concentration <- function(lims_donor_id, gene, chunksize = 1000, ncores
 #' conc <- sample_dna_concentration(dpb1, n = 12000, ncores = 12)
 #' }
 sample_dna_concentration <- function(x, n = 1e4, ncores = 4) {
-  assert_that(is(x, "HLA"))
+  assertive::assert_is_any_of(x, "HLA")
   gene <- strsplitN(x$gene, '-', 2)
   tbl <- x$get_table()
   ldid <- unique(tbl$lims_donor_id) %>%

@@ -122,8 +122,8 @@ eag_table <- function(gene = "DPB1", nextype_basis_id = "1412") {
     stop("Need access to internal databases at DKMS LSL. Please use the packaged tables.",
          call. = FALSE)
   }
+  assertive::assert_is_scalar(nextype_basis_id, "length")
   gene <- match_hla_gene(gene)
-  ## TODO: Revert table names once migration is finished
   fmt <- "
   SELECT
     a.eag_num AS eag_num, a.nmdp_new AS eag_allele,
