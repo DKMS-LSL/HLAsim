@@ -4,7 +4,7 @@ Simulation code and data associated with the _Human Immumology_ article:
 
 __Schöfl G, Schmidt AH, Lange V (2016) Prediction of spurious HLA class II typing results using probabilistic classification.__ _Human Immunology, accepted for publication_.
 
-The article is available online, doi:10.1016/j.humimm.2016.01.012
+The article is available online, [doi:10.1016/j.humimm.2016.01.012](http://dx.doi.org/10.1016/j.humimm.2016.01.012)
 
 ## Abstract
 
