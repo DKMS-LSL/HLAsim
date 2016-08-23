@@ -41,5 +41,5 @@ expected_genotype_frequencies <- function(alleles, frequencies) {
   genos <- expand_genotype(dt$a, as.int = TRUE, matrix = TRUE)
   p <- multinomial_coefficient(genos) * apply(genos, 1, function(i) prod(dt$f[i]))
   np <- apply(matrix(dt$a[genos], ncol = 2), 1L, paste, collapse = "/")
-  dplyr::tbl_dt(data.table(genotype = np, pexp = p, key = "genotype"))
+  dtplyr::tbl_dt(data.table(genotype = np, pexp = p, key = "genotype"))
 }

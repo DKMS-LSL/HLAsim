@@ -170,9 +170,9 @@ sample_dpb_uk &lt;-<span class="st"> </span><span class="kw">make_genotype_sampl
 <span class="co">#&gt;     breaks &lt;- slice_bins(conc, bin_size)</span>
 <span class="co">#&gt;     bins &lt;- cut(rconc, breaks, include.lowest = TRUE, dig.lab = 4, </span>
 <span class="co">#&gt;         ordered_result = TRUE)</span>
-<span class="co">#&gt;     structure(list(samples = dplyr::tbl_dt(data.table(genotype = rgeno, </span>
+<span class="co">#&gt;     structure(list(samples = dtplyr::tbl_dt(data.table(genotype = rgeno, </span>
 <span class="co">#&gt;         eag_status = eag_status, zygosity = rzygosity, conc = rconc, </span>
-<span class="co">#&gt;         bins = bins, idx = seq_len(n), key = &quot;idx&quot;)), errors = dplyr::tbl_dt(data.table(genotype = character(), </span>
+<span class="co">#&gt;         bins = bins, idx = seq_len(n), key = &quot;idx&quot;)), errors = dtplyr::tbl_dt(data.table(genotype = character(), </span>
 <span class="co">#&gt;         eag_status = character(), zygosity = character(), idx = integer(), </span>
 <span class="co">#&gt;         key = &quot;idx&quot;))), penv = parent.env(environment(NULL)), </span>
 <span class="co">#&gt;         breaks = breaks, class = c(&quot;geno_table&quot;, &quot;list&quot;))</span>

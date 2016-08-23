@@ -150,7 +150,7 @@ summarise_gtbl <- function(x) {
 }
 
 tbls <- iter(ls(pattern = "^err_tbl_.+_.+"))
-tbls.summary <- tbl_dt(foreach(tbl = tbls, .combine = "rbind") %do% {
+tbls.summary <- dtplyr::tbl_dt(foreach(tbl = tbls, .combine = "rbind") %do% {
   gene <- toupper(strsplit(tbl, "_")[[1]][3])
   provenance <- toupper(strsplit(tbl, "_")[[1]][4])
   summarise_gtbl(get(tbl)) %>%

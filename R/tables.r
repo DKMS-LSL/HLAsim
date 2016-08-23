@@ -22,7 +22,7 @@ nmdp_table <- function() {
   on.exit(unlink(tmp))
   curl::curl_download(u, tmp)
   con <- unz(tmp, filename = "numer.v3.txt")
-  rs <- dplyr::tbl_dt(
+  rs <- dtplyr::tbl_dt(
     data.table::setDT(
       scan(con, what = list("character", "character"),
            nlines = -1, sep = "\t", skip = 3, quiet = TRUE)
@@ -72,7 +72,7 @@ g_table <- function() {
             "downloaded from http://hla.alleles.org/wmda/.", immediate. = TRUE)
   }
   rs <- read.csv(con, header = FALSE, colClasses = "character", sep = ";", comment.char = "#")
-  rs <- dplyr::tbl_dt(data.table::setDT(rs))
+  rs <- dtplyr::tbl_dt(data.table::setDT(rs))
   data.table::setnames(rs, names(rs), c("gene", "subtype", "code"))
   rs <- rs[, gene := paste0("HLA-", sub("*", "", gene, fixed = TRUE))]
   rs <- rs[nzchar(rs[, code])][, .(gene, code, subtype)]
@@ -129,12 +129,12 @@ eag_table <- function(gene = "DPB1", nextype_basis_id = "1412") {
     a.eag_num AS eag_num, a.nmdp_new AS eag_allele,
     TO_NUMBER(b.exon) AS exon, a.allele_id, a.dna_version_id,
     a.allele_num
-  FROM ngsrep.nextype_alleles_per_eag a
-  INNER JOIN ngsrep.nextype_eags b
+  FROM ngstest.nextype_alleles_per_eag a
+  INNER JOIN ngstest.nextype_eags b
   ON a.eag_num           = b.eag_num
   WHERE a.gene           = '%s'
   AND a.nextype_basis_id = %s"
-  rs <- dplyr::tbl_dt(orcl::ora_query(sprintf(fmt, gene, nextype_basis_id)))
+  rs <- dtplyr::tbl_dt(orcl::ora_query(sprintf(fmt, gene, nextype_basis_id), user = "ngstest"))
   rs[, allele_id := strsplitN(allele_id, ";", 1)]
   dna_version_id <- rs[, unique(dna_version_id)]
   rs[, dna_version_id := NULL]
@@ -251,7 +251,7 @@ gtf_table.HLA <- function(x) {
     setkeyv(tbl, "genotype")
     gtf <- tbl[gtf]
   }
-  gtf <- dplyr::tbl_dt(gtf)
+  gtf <- dtplyr::tbl_dt(gtf)
   structure(gtf, class = c("gtf_tbl", class(gtf)))
 }
 

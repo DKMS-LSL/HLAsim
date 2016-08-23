@@ -66,7 +66,7 @@ dkms_dna_concentration <- function(lims_donor_id, gene, chunksize = 1000, ncores
   GROUP BY N.LIMS_DONOR_ID, TRUNC(M.DATETIME), A.AUFTRAGGEBER
   ORDER BY N.LIMS_DONOR_ID
   "
-  rs <- dplyr::tbl_dt(foreach(ldid = ichunk(lims_donor_id, chunksize), .combine = "rbind") %dopar% {
+  rs <- dtplyr::tbl_dt(foreach(ldid = ichunk(lims_donor_id, chunksize), .combine = "rbind") %dopar% {
     rs <- orcl::ora_query(sprintf(fmt, gene, comma(wrap(ldid))))
     rs[, ymd := lubridate::floor_date(ymd, unit = "day")]
     data.table::setkeyv(rs, "lims_donor_id")

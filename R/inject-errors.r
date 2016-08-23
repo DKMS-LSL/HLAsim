@@ -120,7 +120,7 @@ inject_errors <- function(x, cdf, perr, odds = 1) {
   dt[, bins := NULL]
   dt[, pE := NULL]
   setkeyv(dt, "idx")
-  x$errors <- dplyr::tbl_dt(dt)
+  x$errors <- dtplyr::tbl_dt(dt)
   x
 }
 

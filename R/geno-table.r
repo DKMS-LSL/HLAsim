@@ -179,7 +179,7 @@ make_genotype_sampler <- function(x, eag) {
     bins <- cut(rconc, breaks, include.lowest = TRUE, dig.lab = 4, ordered_result = TRUE)
     structure(
       list(
-        samples = dplyr::tbl_dt(data.table(
+        samples = dtplyr::tbl_dt(data.table(
           genotype   = rgeno,
           eag_status = eag_status,
           zygosity   = rzygosity,
@@ -188,7 +188,7 @@ make_genotype_sampler <- function(x, eag) {
           idx        = seq_len(n),
           key        = "idx"
         )),
-        errors = dplyr::tbl_dt(data.table(
+        errors = dtplyr::tbl_dt(data.table(
           genotype   = character(),
           eag_status = character(),
           zygosity   = character(),

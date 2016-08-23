@@ -188,14 +188,14 @@ check_hla_allele_tbl <- function(tbl) {
   ## Deterimine zygosity
   rs[, zygosity := ifelse(allele1 == allele2, 'homozygous', 'heterozygous')]
   data.table::setkeyv(rs, 'lims_donor_id') # sorting by key
-  private$allele_table <- dplyr::tbl_dt(rs)
+  private$allele_table <- dtplyr::tbl_dt(rs)
 })
 
 .HLA$set("public", "allele_frequency", function() {
   if (!private$has_allele_freq()) {
     rs <- data.table::copy(self$get_table())
     rs <- rs[, list(lims_donor_id, allele1, allele2, zygosity)]
-    rs <- tidyr::gather_(rs, "num", "allele", c("allele1", "allele2"))
+    rs <- dtplyr::tbl_dt(data.table::setDT(tidyr::gather_(rs, "num", "allele", c("allele1", "allele2"))))
     data.table::setkeyv(rs, 'lims_donor_id')
     n <- nrow(rs)
     rs <- rs[, list(

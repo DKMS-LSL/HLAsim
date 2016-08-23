@@ -53,7 +53,7 @@ conc.uk <- sample_dna_concentration(dqb1[provenance == "UK"], n = 24000, ncores 
 conc.uk <- conc.uk[ymd >= ymd("2014-01-01")]
 conc.uk[, provenance := "UK"]
 
-concentration <- tbl_dt(rbind(conc.de, conc.pl, conc.uk))
+concentration <- dtplyr::tbl_dt(rbind(conc.de, conc.pl, conc.uk))
 devtools::use_data(concentration, overwrite = TRUE)
 
 # Jokers and Partials -----------------------------------------------------

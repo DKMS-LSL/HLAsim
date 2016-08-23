@@ -81,7 +81,7 @@ map_genotype_frequencies <- function(x) {
   rs[, zygosity := factor(zygosity)]
   rs[, Class := factor(Class)]
   setkeyv(rs, "genotype")
-  rs <- dplyr::tbl_dt(rs)
+  rs <- dtplyr::tbl_dt(rs)
   structure(rs, class = c("gtf_tbl", class(rs)))
 }
 
